@@ -3,55 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>कराड AI पीक डॉक्टर - Simple</title>
+    <title>कराड AI पीक डॉक्टर - Real AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #6dd47e 0%, #4caf50 100%); min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #6dd47e 0%, #4caf50 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
         .header { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; padding: 30px; text-align: center; }
-        .header h1 { font-size: 22px; margin-bottom: 5px; }
-        .header p { font-size: 14px; opacity: 0.9; }
+        .header h1 { font-size: 20px; margin-bottom: 5px; }
         .content { padding: 30px; }
-        .success { background: #c8e6c9; color: #2e7d32; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        input[type="text"] { width: 100%; padding: 15px; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; margin-bottom: 15px; }
-        input[type="text"]:focus { outline: none; border-color: #2e7d32; }
-        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .step { background: #fff3e0; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #ff9800; font-size: 14px; }
-        .step b { color: #e65100; }
+        .status { padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        .loading { background: #fff3cd; color: #856404; }
+        .success { background: #c8e6c9; color: #2e7d32; }
+        .error { background: #f8d7da; color: #721c24; }
+        .upload-area { border: 3px dashed #4caf50; border-radius: 15px; padding: 30px; text-align: center; cursor: pointer; background: #f1f8f4; }
+        .upload-area:hover { background: #e8f5e9; }
+        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #imagePreview { max-width: 100%; max-height: 300px; border-radius: 10px; margin: 15px auto; display: none; }
+        .result { display: none; margin-top: 20px; padding: 20px; background: #f1f8f4; border-radius: 10px; border-left: 5px solid #4caf50; }
+        .result h3 { color: #2e7d32; margin-bottom: 15px; }
+        .result-item { margin: 12px 0; padding: 12px; background: white; border-radius: 8px; }
+        .result-item b { color: #1b5e20; display: block; margin-bottom: 5px; }
+        .confidence-bar { width: 100%; height: 25px; background: #e0e0e0; border-radius: 12px; overflow: hidden; margin-top: 5px; }
+        .confidence-fill { height: 100%; background: linear-gradient(90deg, #4caf50, #2e7d32); text-align: center; color: white; line-height: 25px; font-size: 12px; font-weight: bold; }
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>प्रेमलकाकी चव्हाण माध्यमिक विद्यालय विजयनगर</h1>
-            <p>कराड तालुका AI पीक डॉक्टर - Google Verify System</p>
+            <p>कराड तालुका AI पीक डॉक्टर - Real TensorFlow AI</p>
         </div>
         <div class="content">
-            <div class="success">✅ Google + ICAR Auto Verify System तयार आहे!</div>
+            <div id="status" class="status loading">⏳ Real AI Model लोड होत आहे... 30 सेकंद थांबा</div>
             
-            <input type="text" id="pikInput" placeholder="पिकाचे नाव + लक्षण टाइप करा. उदा: टोमॅटो पानावर काळे डाग">
+            <label for="imageInput" class="upload-area">
+                <div style="font-size: 48px;">📸</div>
+                <h3>रोगट पानाचा फोटो टाका</h3>
+                <p>ऊस, टोमॅटो, सोयाबीन, बटाटा - AI ओळखेल</p>
+            </label>
+            <input type="file" id="imageInput" accept="image/*">
             
-            <button class="btn" onclick="verifyRog()">🔍 Google + ICAR वर रोग Verify करा</button>
+            <img id="imagePreview">
             
-            <div class="step"><b>Step 1:</b> वरच्या Box मध्ये पिकाचे नाव आणि लक्षण टाइप करा<br>उदा: ऊस पान पिवळे पडले किंवा टोमॅटो करपा रोग</div>
-            <div class="step"><b>Step 2:</b> हिरवं बटन दाबा</div>
-            <div class="step"><b>Step 3:</b> Google Images + ICAR माहिती 2 Tab मध्ये उघडेल. फोटो Compare करून खात्री करा</div>
+            <button class="btn" id="analyzeBtn" onclick="analyzeImage()" disabled>🔍 Real AI ने रोग ओळखा</button>
+            
+            <div class="result" id="result"></div>
         </div>
     </div>
     <script>
-        function verifyRog() {
-            const pikNave = document.getElementById('pikInput').value;
-            if(pikNave && pikNave.trim() !== ''){
-                const searchQuery = encodeURIComponent(pikNave + " plant disease leaf symptoms india");
-                const icarQuery = encodeURIComponent(pikNave + " ICAR रोग माहिती उपाय");
-                
-                window.open(https://www.google.com/search?tbm=isch&q=${searchQuery}, '_blank');
-                window.open(https://www.google.com/search?q=${icarQuery}, '_blank');
-            } else {
-                alert('कृपया पिकाचे नाव आणि लक्षण टाइप करा\n\nउदाहरण:\nटोमॅटो पानावर काळे डाग\nऊस तांबेरा रोग\nसोयाबीन पान पिवळे');
+        // ⚠️ इथे तुझी Teachable Machine Model Link Paste कर
+        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/PASTE_YOUR_MODEL_LINK_HERE/";
+        
+        let model, maxPredictions;
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const status = document.getElementById('status');
+        const result = document.getElementById('result');
+
+        // रोगांची माहिती Database
+        const rogMahiti = {
+            "ऊस_तांबेरा_Rust": {
+                pik: "ऊस", rog: "तांबेरा (Rust)",
+                upay: "Propiconazole 1ml/लिटर पाण्यात मिसळून फवारणी करा. 15 दिवसांनी परत फवारा.",
+                kalji: "नत्र खत जास्त देऊ नका. पाणी साचू देऊ नका. रोगट पाने काढून जाळा."
+            },
+            "टोमॅटो_करपा_Blight": {
+                pik: "टोमॅटो", rog: "करपा (Early/Late Blight)",
+                upay: "Mancozeb 2gm/लिटर किंवा Metalaxyl + Mancozeb 2gm/लिटर फवारणी करा. 10 दिवसांनी परत फवारा.",
+                kalji: "खालची पाने काढा. पाणी पानावर पडू देऊ नका. हवा खेळती ठेवा."
+            },
+            "सोयाबीन_मोझॅक_Mosaic": {
+                pik: "सोयाबीन", rog: "पिवळा मोझॅक (Yellow Mosaic Virus)",
+                upay: "हा विषाणूजन्य रोग आहे - यावर औषध नाही. रोगट झाडे उपटून लांब नेऊन जाळा.",
+                kalji: "पांढरी माशी नियंत्रणासाठी Imidacloprid 0.5ml/लिटर फवारा. तण काढून टाका."
+            },
+            "बटाटा_करपा_LateBlight": {
+                pik: "बटाटा", rog: "उशिरा येणारा करपा (Late Blight)",
+                upay: "Metalaxyl 8% + Mancozeb 64% (Ridomil) 2gm/लिटर फवारणी करा. प्रतिबंधक म्हणून 15 दिवस आधी फवारा.",
+                kalji: "ढगाळ हवामानात विशेष काळजी घ्या. बटाटे काढल्यावर शेत स्वच्छ करा."
+            },
+            "निरोगी_Healthy": {
+                pik: "निरोगी पीक", rog: "कोणताही रोग नाही ✅",
+                upay: "पीक एकदम निरोगी आहे. नियमित काळजी घ्या.",
+                kalji: "संतुलित खते द्या. नियमित निरीक्षण करा. प्रतिबंधक फवारणी करा."
+            }
+        };
+
+        // Model लोड कर
+        async function init() {
+            try {
+                const modelURL = MODEL_URL + "model.json";
+                const metadataURL = MODEL_URL + "metadata.json";
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                status.className = "status success";
+                status.innerHTML = "✅ Real AI Model तयार आहे! आता फोटो टाका";
+            } catch (err) {
+                status.className = "status error";
+                status.innerHTML = "❌ Model लोड झाला नाही. MODEL_URL बरोबर आहे का तपासा. Internet चालू आहे का बघा.";
+                console.error(err);
             }
         }
+
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    analyzeBtn.disabled = false;
+                    result.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function analyzeImage() {
+            if (!model) {
+                alert('Model अजून लोड होत आहे. थोडं थांबा.');
+                return;
+            }
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = "⏳ AI तपासत आहे...";
+            
+            const prediction = await model.predict(imagePreview);
+            
+            // सर्वात जास्त Confidence वाला Result शोध
+            let topResult = prediction[0];
+            for (let i = 1; i < prediction.length; i++) {
+                if (prediction[i].probability > topResult.probability) {
+                    topResult = prediction[i];
+                }
+            }
+            
+            const rogData = rogMahiti[topResult.className];
+            const confidence = (topResult.probability * 100).toFixed(1);
+            
+            let barColor = '#4caf50';
+            if (confidence < 70) barColor = '#ff9800';
+            if (confidence < 50) barColor = '#f44336';
+            
+            result.innerHTML = `
+                <h3>🎯 AI निदान पूर्ण झाले!</h3>
+                <div class="result-item">
+                    <b>🌾 पीक:</b> ${rogData.pik}
+                </div>
+                <div class="result-item">
+                    <b>🦠 रोगाचे नाव:</b> ${rogData.rog}
+                </div>
+                <div class="result-item">
+                    <b>📊 AI Confidence Level:</b>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${confidence}%; background: ${barColor};">${confidence}%</div>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <b>💊 तात्काळ उपाय:</b> ${rogData.upay}
+                </div>
+                <div class="result-item">
+                    <b>⚠️ घ्यायची काळजी:</b> ${rogData.kalji}
+                </div>
+                <div class="result-item" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+                    <b>📌 महत्त्वाची सूचना:</b> हे AI निदान आहे. 100% खात्रीसाठी जवळच्या कृषी तज्ञ किंवा KVK केंद्राशी संपर्क करा.
+                </div>
+            `;
+            result.style.display = 'block';
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = "🔍 Real AI ने रोग ओळखा";
+        }
+
+        // Page लोड झाल्यावर Model लोड कर
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
