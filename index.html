@@ -3,72 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>कराड AI पीक डॉक्टर - Fixed</title>
+    <title>कराड AI पीक डॉक्टर - Simple</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #6dd47e 0%, #4caf50 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #6dd47e 0%, #4caf50 100%); min-height: 100vh; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
         .header { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; padding: 30px; text-align: center; }
         .header h1 { font-size: 22px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
         .content { padding: 30px; }
-        .success { background: #c8e6c9; color: #2e7d32; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; }
-        #imagePreview { max-width: 100%; max-height: 250px; border-radius: 10px; margin: 15px auto; display: none; border: 2px solid #4caf50; }
-        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .success { background: #c8e6c9; color: #2e7d32; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 15px; border: 2px solid #4caf50; border-radius: 10px; font-size: 16px; margin-bottom: 15px; }
+        input[type="text"]:focus { outline: none; border-color: #2e7d32; }
+        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .file-label { display: block; border: 3px dashed #4caf50; border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; background: #f1f8f4; margin-bottom: 15px; }
-        .file-label:hover { background: #e8f5e9; }
-        .upload-icon { font-size: 48px; margin-bottom: 10px; }
-        input[type="file"] { display: none; }
-        .step { background: #fff3e0; padding: 12px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ff9800; font-size: 14px; }
+        .step { background: #fff3e0; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #ff9800; font-size: 14px; }
+        .step b { color: #e65100; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>प्रेमलकाकी चव्हाण माध्यमिक विद्यालय विजयनगर</h1>
-            <p>कराड तालुका AI पीक डॉक्टर - Google Auto Verify</p>
+            <p>कराड तालुका AI पीक डॉक्टर - Google Verify System</p>
         </div>
         <div class="content">
-            <div class="success">✅ Google Auto Verify System तयार आहे!</div>
+            <div class="success">✅ Google + ICAR Auto Verify System तयार आहे!</div>
             
-            <label for="imageInput" class="file-label">
-                <div class="upload-icon">📸</div>
-                <h3>पिकाच्या पानाचा फोटो टाका</h3>
-                <p>इथे Click करा → फोटो Select करा</p>
-            </label>
-            <input type="file" id="imageInput" accept="image/*">
+            <input type="text" id="pikInput" placeholder="पिकाचे नाव + लक्षण टाइप करा. उदा: टोमॅटो पानावर काळे डाग">
             
-            <img id="imagePreview">
+            <button class="btn" onclick="verifyRog()">🔍 Google + ICAR वर रोग Verify करा</button>
             
-            <button class="btn" onclick="verifyOnGoogle()">🔍 Google + ICAR वर रोग Verify करा</button>
-            
-            <div class="step"><b>Step 1:</b> वर Click करून फोटो अपलोड करा</div>
-            <div class="step"><b>Step 2:</b> हिरवं बटन दाबा व पिकाचे नाव टाइप करा</div>
-            <div class="step"><b>Step 3:</b> Google Images + ICAR माहिती उघडेल</div>
+            <div class="step"><b>Step 1:</b> वरच्या Box मध्ये पिकाचे नाव आणि लक्षण टाइप करा<br>उदा: ऊस पान पिवळे पडले किंवा टोमॅटो करपा रोग</div>
+            <div class="step"><b>Step 2:</b> हिरवं बटन दाबा</div>
+            <div class="step"><b>Step 3:</b> Google Images + ICAR माहिती 2 Tab मध्ये उघडेल. फोटो Compare करून खात्री करा</div>
         </div>
     </div>
     <script>
-        document.getElementById('imageInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.getElementById('imagePreview');
-                    img.src = event.target.result;
-                    img.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        function verifyOnGoogle() {
-            const pikNave = prompt("पिकाचे नाव + लक्षण टाका:\nउदा: ऊस पान पिवळे\nउदा: टोमॅटो करपा\nउदा: सोयाबीन मोझॅक");
+        function verifyRog() {
+            const pikNave = document.getElementById('pikInput').value;
             if(pikNave && pikNave.trim() !== ''){
                 const searchQuery = encodeURIComponent(pikNave + " plant disease leaf symptoms india");
+                const icarQuery = encodeURIComponent(pikNave + " ICAR रोग माहिती उपाय");
+                
                 window.open(https://www.google.com/search?tbm=isch&q=${searchQuery}, '_blank');
-                window.open(https://www.google.com/search?q=${encodeURIComponent(pikNave + " ICAR रोग माहिती")}, '_blank');
+                window.open(https://www.google.com/search?q=${icarQuery}, '_blank');
             } else {
-                alert('कृपया पिकाचे नाव आणि लक्षण टाका\nउदा: टोमॅटो पानावर काळे डाग');
+                alert('कृपया पिकाचे नाव आणि लक्षण टाइप करा\n\nउदाहरण:\nटोमॅटो पानावर काळे डाग\nऊस तांबेरा रोग\nसोयाबीन पान पिवळे');
             }
         }
     </script>
