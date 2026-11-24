@@ -6,261 +6,71 @@
     <title>कराड तालुका AI पीक डॉक्टर</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Mukta', sans-serif;
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            min-height: 100vh; padding: 15px;
-        }
-        .container {
-            max-width: 700px; margin: 0 auto; background: white;
-            border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); overflow: hidden;
-        }
-        .header {
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-            color: white; padding: 25px 20px; text-align: center;
-        }
-        .header h1 { font-size: 23px; font-weight: 800; margin-bottom: 8px; }
-        .header p { font-size: 14px; opacity: 0.95; }
-        .content { padding: 25px 20px; }
-        .status {
-            background: #c8e6c9; padding: 12px; border-radius: 10px;
-            text-align: center; margin-bottom: 20px; font-weight: 600; color: #2e7d32;
-        }
-        .upload-box {
-            border: 3px dashed #43a047; border-radius: 18px; padding: 40px 20px;
-            text-align: center; background: #f1f8e9; cursor: pointer; transition: 0.3s;
-        }
-        .upload-box:active { transform: scale(0.98); }
-        .upload-box input { display: none; }
-        .upload-icon { font-size: 60px; margin-bottom: 12px; }
-        .upload-text { font-size: 18px; color: #1b5e20; font-weight: 700; }
-        .preview { margin-top: 20px; text-align: center; display: none; }
-        .preview img { max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .btn {
-            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-            color: white; border: none; padding: 15px 35px; border-radius: 10px;
-            font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 15px; width: 100%;
-        }
-        .btn:disabled { background: #bdbdbd; }
-        .result { margin-top: 25px; padding: 25px; border-radius: 15px; display: none; }
-        .result.show { display: block; animation: slideIn 0.4s; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .result-header {
-            background: #c8e6c9; padding: 15px; border-radius: 10px;
-            margin-bottom: 15px; border-left: 5px solid #2e7d32;
-        }
-        .result-header h2 { color: #1b5e20; font-size: 22px; margin-bottom: 5px; }
-        .badge { background: #43a047; color: white; padding: 5px 12px; border-radius: 20px; font-size: 13px; }
-        .info-box { background: #f1f8e9; padding: 15px; border-radius: 10px; margin: 12px 0; }
-        .info-box h4 { color: #2e7d32; font-size: 16px; margin-bottom: 8px; }
-        .info-box p { color: #424242; line-height: 1.8; font-size: 15px; }
-        .verify-section { background: #e3f2fd; padding: 18px; border-radius: 12px; margin-top: 20px; }
-        .verify-section h4 { color: #1565c0; margin-bottom: 12px; font-size: 17px; }
-        .verify-grid { display: grid; gap: 10px; }
-        .verify-btn {
-            background: white; border: 2px solid #1976d2; color: #1976d2;
-            padding: 13px; border-radius: 10px; font-weight: 700; cursor: pointer;
-            text-decoration: none; display: block; text-align: center; font-size: 15px;
-        }
-        .verify-btn:hover { background: #1976d2; color: white; }
-        .loading { text-align: center; padding: 30px; display: none; }
-        .spinner {
-            border: 5px solid #e0e0e0; border-top: 5px solid #43a047; border-radius: 50%;
-            width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #6dd47e 0%, #4caf50 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 22px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .content { padding: 30px; }
+        .upload-area { border: 3px dashed #4caf50; border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; background: #f1f8f4; transition: all 0.3s; }
+        .upload-area:hover { background: #e8f5e9; border-color: #2e7d32; }
+        .upload-icon { font-size: 48px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn:hover { transform: translateY(-2px); }
+        #imagePreview { max-width: 100%; max-height: 300px; border-radius: 10px; margin: 15px auto; display: none; }
+        .success { background: #c8e6c9; color: #2e7d32; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; }
+        input[type="file"] { display: none; }
+        .step { background: #fff3e0; padding: 12px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ff9800; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>प्रेमलकाकी चव्हाण माध्यमिक विद्यालय विजयनगर</h1>
-            <p>कराड तालुका AI पीक डॉक्टर - Auto Verify System</p>
+            <p>कराड तालुका AI पीक डॉक्टर - Google Auto Verify System</p>
         </div>
-        
         <div class="content">
-            <div class="status" id="status">⏳ AI मॉडेल लोड होत आहे...</div>
-
-            <div class="upload-box" id="uploadBox">
+            <div class="success">✅ Google Auto Verify System तयार आहे!</div>
+            <div class="upload-area" onclick="document.getElementById('imageInput').click()">
                 <div class="upload-icon">📸</div>
-                <div class="upload-text">पिकाच्या पानाचा फोटो टाका</div>
-                <p style="font-size: 14px; color: #666; margin-top: 10px;">Click करा - AI ओळखेल + Google वर Verify होईल</p>
-                <input type="file" id="imageInput" accept="image/*">
+                <h3>पिकाच्या पानाचा फोटो टाका</h3>
+                <p>Click करा → फोटो Select करा → खालचं बटन दाबा</p>
             </div>
-
-            <div class="preview" id="preview">
-                <img id="previewImg" src="" alt="Preview">
-                <button class="btn" id="predictBtn" onclick="predict()">🔍 AI ने तपासा + Auto Verify</button>
-            </div>
-
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p style="font-size: 16px; color: #2e7d32; font-weight: 600;">AI पान तपासत आहे...</p>
-            </div>
-
-            <div class="result" id="result"></div>
+            <input type="file" id="imageInput" accept="image/*">
+            <img id="imagePreview">
+            <button class="btn" onclick="verifyOnGoogle()">🔍 Google + ICAR वर रोग Verify करा</button>
+            <div class="step"><b>Step 1:</b> वर फोटो अपलोड करा</div>
+            <div class="step"><b>Step 2:</b> बटन दाबा व पिकाचे नाव + लक्षण टाइप करा. उदा: टोमॅटो पानावर काळे डाग</div>
+            <div class="step"><b>Step 3:</b> Google Images + ICAR साइट उघडेल. तुमच्या फोटोसारखे रोगाचे फोटो बघून खात्री करा</div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script>
-        // 👇 इथे तुझी Teachable Machine लिंक टाक. Demo साठी ही लिंक चालेल
-        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/N5g4z7V7E/";
-        
-        let model, maxPredictions;
         const imageInput = document.getElementById('imageInput');
-        const previewImg = document.getElementById('previewImg');
-        const preview = document.getElementById('preview');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
-        const statusDiv = document.getElementById('status');
-        const uploadBox = document.getElementById('uploadBox');
-        const predictBtn = document.getElementById('predictBtn');
-
-        uploadBox.addEventListener('click', () => imageInput.click());
-
-        // कराड तालुक्यातील पिकांची माहिती
-        const pikDatabase = {
-            'ऊस तांबेरा': { 
-                pik: 'ऊस', 
-                rog: 'तांबेरा रोग - Red Rot', 
-                lakshane: 'पानांवर लालसर ठिपके, कांडी आतून लाल',
-                upay: 'कार्बेन्डाझिम 1 ग्रॅम/लिटर फवारणी. रोगट ऊस काढून जाळा.', 
-                kalaji: 'बियाणे प्रक्रिया करा. पाणी साचू देऊ नका.',
-                googleSearch: 'sugarcane red rot disease'
-            },
-            'ऊस निरोगी': { 
-                pik: 'ऊस', 
-                rog: 'निरोगी - कोणताही रोग नाही', 
-                lakshane: 'पाने हिरवीगार, चमकदार',
-                upay: 'सध्या कोणत्याही औषधाची गरज नाही.', 
-                kalaji: 'नियमित पाणी व खत व्यवस्थापन सुरू ठेवा.',
-                googleSearch: 'healthy sugarcane leaf'
-            },
-            'सोयाबीन मोझॅक': { 
-                pik: 'सोयाबीन', 
-                rog: 'पिवळा मोझॅक - Yellow Mosaic', 
-                lakshane: 'पानांवर पिवळे-हिरवे चट्टे',
-                upay: 'थायमेथोक्झाम 0.5 ग्रॅम/लिटर. पांढरी माशी नियंत्रण करा.', 
-                kalaji: 'प्रतिकारक वाण JS-335 लावा.',
-                googleSearch: 'soybean yellow mosaic virus'
-            },
-            'टोमॅटो करपा': { 
-                pik: 'टोमॅटो', 
-                rog: 'करपा - Early Blight', 
-                lakshane: 'पानांवर तपकिरी वर्तुळाकार ठिपके',
-                upay: 'मॅन्कोझेब 2.5 ग्रॅम/लिटर + कार्बेन्डाझिम 1 ग्रॅम/लिटर', 
-                kalaji: 'ठिबक सिंचन वापरा. खालची पाने काढा.',
-                googleSearch: 'tomato early blight disease'
-            }
-        };
-
-        async function init() {
-            try {
-                model = await tmImage.load(MODEL_URL + "model.json", MODEL_URL + "metadata.json");
-                maxPredictions = model.getTotalClasses();
-                statusDiv.innerHTML = '✅ AI तयार आहे! फोटो अपलोड करा';
-                statusDiv.style.background = '#c8e6c9';
-            } catch (error) {
-                statusDiv.innerHTML = '⚠️ Model लोड झाला नाही. Internet चेक करा किंवा Server वर host करा';
-                statusDiv.style.background = '#ffcc80';
-                console.error(error);
-            }
-        }
-
+        const imagePreview = document.getElementById('imagePreview');
+        
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    preview.style.display = 'block';
-                    result.classList.remove('show');
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
                 }
                 reader.readAsDataURL(file);
             }
         });
 
-        async function predict() {
-            if (!model) {
-                alert('Model लोड होत आहे, 3 सेकंद थांबा');
-                return;
+        function verifyOnGoogle() {
+            const pikNave = prompt("पिकाचे नाव + लक्षण टाका:\nउदा: ऊस पान पिवळे पडले\nउदा: टोमॅटो करपा रोग\nउदा: सोयाबीन पानावर पिवळे ठिपके");
+            if(pikNave && pikNave.trim() !== ''){
+                const searchQuery = encodeURIComponent(pikNave + " plant disease leaf symptoms india");
+                window.open(https://www.google.com/search?tbm=isch&q=${searchQuery}, '_blank');
+                window.open(https://www.google.com/search?q=${encodeURIComponent(pikNave + " ICAR रोग माहिती कृषी")}, '_blank');
+                alert('2 Tab उघडले! \n1. Google Images - फोटो Compare करा\n2. ICAR/Google - माहिती व उपाय वाचा');
+            } else {
+                alert('कृपया पिकाचे नाव आणि लक्षण टाका');
             }
-            
-            loading.style.display = 'block';
-            result.classList.remove('show');
-            predictBtn.disabled = true;
-            
-            const prediction = await model.predict(previewImg);
-            prediction.sort((a, b) => b.probability - a.probability);
-            const topResult = prediction[0];
-            
-            loading.style.display = 'none';
-            predictBtn.disabled = false;
-            
-            const mahiti = pikDatabase[topResult.className] || {
-                pik: topResult.className, 
-                rog: 'नवीन रोग', 
-                lakshane: 'माहिती उपलब्ध नाही',
-                upay: 'कृषी तज्ञांचा सल्ला घ्या', 
-                kalaji: 'तपासून पहा',
-                googleSearch: topResult.className
-            };
-            
-            const confidence = (topResult.probability * 100).toFixed(1);
-            const searchQuery = encodeURIComponent(mahiti.googleSearch);
-            
-            result.innerHTML = `
-                <div class="result-header">
-                    <h2>✅ ${mahiti.pik} - AI ने ओळखले</h2>
-                    <span class="badge">खात्री: ${confidence}%</span>
-                </div>
-                
-                <div class="info-box">
-                    <h4>🦠 रोगाचे निदान</h4>
-                    <p><strong>रोग:</strong> ${mahiti.rog}</p>
-                    <p><strong>लक्षणे:</strong> ${mahiti.lakshane}</p>
-                </div>
-
-                <div class="info-box">
-                    <h4>💊 उपाय व औषध</h4>
-                    <p>${mahiti.upay}</p>
-                </div>
-
-                <div class="info-box">
-                    <h4>⚠️ घ्यावयाची काळजी</h4>
-                    <p>${mahiti.kalaji}</p>
-                </div>
-
-                <div class="verify-section">
-                    <h4>🔍 Auto Verify - इतर साइटवर तपासा</h4>
-                    <p style="font-size: 14px; margin-bottom: 12px; color: #555;">खालील बटन दाबून खात्री करा:</p>
-                    <div class="verify-grid">
-                        <a href="https://www.google.com/search?tbm=isch&q=${searchQuery}" target="_blank" class="verify-btn">
-                            🔎 Google Images वर फोटो Compare करा
-                        </a>
-                        <a href="https://www.google.com/search?q=${searchQuery}+site:icar.org.in" target="_blank" class="verify-btn">
-                            🏛️ ICAR (सरकारी) साइटवर माहिती पहा
-                        </a>
-                        <a href="https://www.google.com/search?q=${searchQuery}+krishi+vigyan+kendra" target="_blank" class="verify-btn">
-                            🌾 कृषी विज्ञान केंद्र वर शोधा
-                        </a>
-                        <a href="https://plantix.net/en/library/plant-diseases/" target="_blank" class="verify-btn">
-                            📱 Plantix App Database मध्ये पहा
-                        </a>
-                    </div>
-                </div>
-
-                <div class="info-box" style="background: #ffebee; border-left: 4px solid #c62828; margin-top: 15px;">
-                    <h4 style="color: #c62828;">📢 महत्त्वाची सूचना</h4>
-                    <p>औषध फवारण्यापूर्वी <strong>तालुका कृषी अधिकारी, कराड - 02364-XXXXXX</strong> यांचा सल्ला घ्या.</p>
-                </div>
-            `;
-            result.classList.add('show');
         }
-
-        init();
     </script>
 </body>
 </html>
